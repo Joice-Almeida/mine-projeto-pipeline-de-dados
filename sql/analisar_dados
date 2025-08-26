@@ -1,0 +1,36 @@
+-- Listar todas as vendas, mostrando o nome do cliente, o nome do produto e a data da venda.
+SELECT
+    C.Nome_Cliente,
+    P.Nome_Produto,
+    V.Data_Venda
+FROM `t1engenhariadados.turma3_grupo3_3.Vendas` AS V
+JOIN `t1engenhariadados.turma3_grupo3_3.Clientes` AS C ON V.ID_Cliente = C.ID_Cliente
+JOIN `t1engenhariadados.turma3_grupo3_3.Produtos` AS P ON V.ID_Produto = P.ID_Produto
+ORDER BY V.Data_Venda;
+
+-- Contar quantas vezes cada cliente comprou (melhor cliente)
+SELECT
+    C.Nome_Cliente,
+    COUNT(V.ID_Venda) AS total_compras
+FROM
+    `t1engenhariadados.turma3_grupo3_3.Vendas` AS V
+JOIN
+    `t1engenhariadados.turma3_grupo3_3.Clientes` AS C ON V.ID_Cliente = C.ID_Cliente
+GROUP BY
+    C.Nome_Cliente
+ORDER BY
+    total_compras DESC;
+
+-- Produtos mais vendidos
+
+SELECT
+    P.Nome_Produto,
+    COUNT(P.ID_Produto) AS quantidade_vendida
+FROM
+    `t1engenhariadados.turma3_grupo3_3.Vendas` AS V
+JOIN
+    `t1engenhariadados.turma3_grupo3_3.Produtos` AS P ON V.ID_Produto = P.ID_Produto
+GROUP BY
+    P.Nome_Produto
+ORDER BY
+    quantidade_vendida DESC
