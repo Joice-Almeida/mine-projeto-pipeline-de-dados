@@ -1,4 +1,4 @@
-# mine-projeto-pipeline-de-dados
+# mini-projeto-pipeline-de-dados
 Esse projeto tem como objetivo praticar os conceitos de pipeline e análise de dados com SQL utilizando BigQuery
 
 ## Contexto e cenário utilizado para atividade proposta para esse projeto
