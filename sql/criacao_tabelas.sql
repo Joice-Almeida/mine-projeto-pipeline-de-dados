@@ -1,6 +1,6 @@
 -- Criação da tabela Clientes
 
-CREATE OR REPLACE TABLE t1engenhariadados.turma3_grupo3_3.Clientes (
+CREATE OR REPLACE TABLE `t1engenhariadados.turma3_grupo3_3.Clientes` (
     id_cliente INT64,
     nome_cliente STRING,
     email_cliente STRING,
