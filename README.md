@@ -15,7 +15,9 @@ Você deve criar um conjunto de scripts SQL para:
 4. **Criar uma View**: Construir uma `VIEW` para simplificar análises futuras.
 
 
-##Dados que serão utilizados para o projeto
+
+## Dados que serão utilizados para o projeto
+
 
 
 | id_venda | nome_cliente  | email_cliente       | estado_cliente | nome_produto           | categoria_produto   | preco_produto | data_venda  | quantidade |
