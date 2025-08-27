@@ -38,28 +38,7 @@ No BigQuery em um projeto chamado t1engenhariadados foi criado um dataset chamad
 - Produtos
 - Vendas
 
-**Descrição dos campos da tabela Clientes**
 
-- id_cliente (identificador do cliente - Primary key)
-- nome_cliente (nome do cliente)
-- email_cliente (e-mail do cliente)
-- estado_cliente ( estado onde o cliente reside)
-
- **Descrição dos campos da tabela Produtos**
- 
- - id_produto (identificador do produto - Primary key)
- - nome_produto (nome do produto a ser vendido )
- - categoria_produto ( categoria que determinado produto se enquadra)
- - preco_produto ( preço de determinado produto)
-
- **Descrição dos campos da tabela Vendas**
- 
- - id_venda (identificador da compra - Primary key)
- - id_cliente ( identificador do cliente - Foreign key)
- - id_produto (identificador do produto - Foreign key)
- - data_venda ( registra a data da venda)
- - quantidade ( registra a quantidade vendida)
-   
 
 ## Perguntas
 
