@@ -44,27 +44,33 @@ No BigQuery em um projeto chamado t1engenhariadados foi criado um dataset chamad
 
 **1 - Por que uma planilha não é ideal para uma empresa que quer analisar suas vendas a fundo?**
 
-
+**Resposta:**  Uma planilha não é ideal porque não escala para volumes grandes, carece de esquema e validações robustas, é frágil para colaboração simultânea e auditoria, dificulta automação e análises complexas (joins, agregações pesadas) e oferece governança e segurança limitadas, tornando fácil introduzir erros e difícil assegurar qualidade e consistência dos dados.
 
 
 **2 - Que tipo de perguntas vocês acham que o dono da livraria gostaria de responder com esses dados?**
 
-
-
-
-                                                                                                
+**Resposta:** O dono da livraria provavelmente quer saber quanto vende por dia/mês/categoria/autor/título e por canal/loja, quais produtos e autores mais vendem, ticket médio e itens por venda, quantos clientes são novos versus recorrentes, qual o LTV e a recência/frequência/valor (RFM), o efeito de promoções e cupons, padrões de sazonalidade e previsões de demanda; se houver dados de estoque, também ruptura e giro.
+                                                                             
 **3 - Com base nos dados brutos, quais outras duas tabelas precisamos criar? Que colunas e tipos de dados elas teriam?**
 
+**Resposta:**  A partir dos dados brutos, é importante criar duas dimensões: Dim_Clientes (id_cliente STRING; nome STRING; email STRING; telefone STRING; documento STRING; cidade STRING; uf STRING; data_cadastro DATE; ativo BOOL; atualizado_em TIMESTAMP) e Dim_Produtos (id_produto STRING; titulo STRING; autor STRING; categoria STRING; isbn STRING; preco_atual NUMERIC; moeda STRING; ativo BOOL; atualizado_em TIMESTAMP). A tabela de vendas (fato) referenciará essas dimensões via id_cliente e id_produto e deve conter, entre outros, data_venda DATE/TIMESTAMP, quantidade INT64, preco_unitario_no_momento NUMERIC, desconto NUMERIC e valor_total NUMERIC; se precisar de histórico de preços, crie também uma tabela de preços por vigência (id_produto STRING; preco NUMERIC; vigencia_inicio TIMESTAMP; vigencia_fim TIMESTAMP).
 
 **4 - Se o BigQuery não tem chaves estrangeiras, como garantimos que um ID_Cliente na tabela de vendas realmente existe na tabela de clientes?**
 
+**Resposta:** Como o BigQuery não aplica chaves estrangeiras, garantimos a existência do ID por processo: primeiro carregamos/deduplicamos clientes na Dim_Clientes; depois inserimos vendas apenas a partir de um SELECT que faz join/semijoin com Dim_Clientes (e rejeita “órfãos”); usamos MERGE para upsert controlado; executamos testes de qualidade agendados (LEFT JOIN para detectar ids sem correspondência) com alertas; e, se quiser, declaramos constraints NOT ENFORCED para documentação e usamos ferramentas como dbt/Dataform para validar automaticamente.
 
 **5 - Por que é uma boa prática inserir os clientes e produtos em suas próprias tabelas antes de inserir os dados de vendas?**
 
+**Resposta:** Inserir clientes e produtos antes das vendas assegura que as referências existam, permite deduplicação e padronização (evitando variações de nomes/categorias), reduz redundância e custo ao não repetir atributos textuais na fato, melhora performance de consultas por chaves compactas e viabiliza histórico e governança (SCD, auditoria de mudanças).
 
 **6 - Em um cenário com milhões de vendas por dia, o INSERT INTO seria a melhor abordagem?**
 
+**Resposta:** Em cenário de milhões de vendas por dia, não é eficiente fazer muitos INSERT INTO pequenos; prefira cargas em lote a partir do Cloud Storage (Parquet/Avro/ORC), ou streaming de alta taxa via Storage Write API; ingira em tabelas de stage particionadas e depois faça MERGE na fato; particione por data_venda e aplique clustering (por id_produto/id_cliente) para reduzir custo e acelerar consultas.
+
 **7 - Qual é a principal vantagem de usar uma VIEW em vez de simplesmente salvar o código em um arquivo de texto?**
+
+**Resposta:** A principal vantagem de uma VIEW é centralizar e versionar a lógica dentro do próprio warehouse, garantindo que todos usem a mesma definição sempre atualizada sobre os dados base, com controle de acesso (inclusive secure/authorized views), rastreabilidade por catálogo e possibilidade de trocar por uma materialized view quando fizer sentido para performance, ao invés de depender de arquivos de texto dispersos.
 
 **8 - Se o preço de um produto mudar na tabela Produtos, o Valor_Total na VIEW será atualizado automaticamente na próxima vez que a consultarmos?**
 
+**Resposta:**  Sim, uma VIEW é avaliada a cada consulta; se o Valor_Total na VIEW usa o preço atual da tabela Produtos, ele refletirá o novo preço automaticamente. Para manter o histórico correto, armazene na fato o preco_unitario_no_momento (e compute valor_total no evento) ou faça join com uma tabela de preços com vigência usando a data da venda.
